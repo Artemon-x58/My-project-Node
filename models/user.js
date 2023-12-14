@@ -29,6 +29,32 @@ const userSchema = new Schema(
     avatarURL: {
       type: String,
     },
+    age: {
+      type: Number,
+      required: [true, "Set age for user"],
+    },
+    weight: {
+      type: Number,
+      required: [true, "Set weight for user"],
+    },
+    height: {
+      type: Number,
+      required: [true, "Set height for user"],
+    },
+    kef: {
+      type: Number,
+      required: [true, "Set kef for user"],
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+      required: [true, "Set gender for user"],
+    },
+    yourGoal: {
+      type: String,
+      enum: ["lose fat", "maintain", "gain muscle"],
+      required: [true, "Set your goal for user"],
+    },
     verify: {
       type: Boolean,
       default: false,

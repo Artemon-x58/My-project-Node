@@ -1,9 +1,12 @@
-const { User, Water } = require("../../models");
-const { HttpError, currentDate } = require("../../helpers");
+const { User } = require("../../models");
+const { HttpError } = require("../../helpers");
 const gravatar = require("gravatar");
 const bcrypt = require("bcrypt");
 const { nanoid } = require("nanoid");
 const { sendEmail } = require("../../services/email");
+const { initialWaterValue } = require("../../water");
+const { initialCaloriesValue } = require("../../calories");
+
 require("dotenv").config();
 
 const { BASE_URL } = process.env;
@@ -25,11 +28,16 @@ const register = async (req, res) => {
     verificationToken,
   });
 
-  const date = currentDate();
-  await Water.create({
-    waterAndDate: { water: 0, date: date },
-    owner: newUser.id,
-  });
+  await initialWaterValue(newUser.id, newUser.weight, newUser.kef);
+  await initialCaloriesValue(
+    newUser.id,
+    newUser.gender,
+    newUser.weight,
+    newUser.height,
+    newUser.kef,
+    newUser.age,
+    newUser.yourGoal
+  );
 
   const verifyEmail = {
     to: email,

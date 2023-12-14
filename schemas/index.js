@@ -1,8 +1,8 @@
-const { registerAndLoginSchema, emailSchema } = require("./users");
+const { registerAndLoginSchema, loginSchema } = require("./users");
 const waterSchema = require("./water");
 
 module.exports = {
   registerAndLoginSchema,
-  emailSchema,
   waterSchema,
+  loginSchema,
 };

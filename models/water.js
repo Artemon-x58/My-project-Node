@@ -12,6 +12,10 @@ const waterSchema = new Schema(
         },
       },
     ],
+    recommendedWater: {
+      type: Number,
+      required: true,
+    },
     owner: {
       type: Schema.Types.ObjectId,
       ref: "user",
