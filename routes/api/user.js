@@ -8,7 +8,14 @@ router.post(
   "/water-intake",
   authenticate,
   validateUsers(schemas.waterSchema),
-  ctrl.users.waterChange
+  ctrl.users.waterEdit
+);
+
+router.post(
+  "/edit-weight",
+  authenticate,
+  validateUsers(schemas.weightSchema),
+  ctrl.users.weightEdit
 );
 
 module.exports = router;
