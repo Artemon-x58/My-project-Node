@@ -1,3 +1,4 @@
+const { updateCalories } = require("../../calories");
 const { HttpError } = require("../../helpers");
 const { User } = require("../../models");
 const { updateWaterValue } = require("../../water");
@@ -10,9 +11,10 @@ const updateUserSetting = async (req, res) => {
   if (!user) {
     throw HttpError(404);
   }
-  const { id, weight, kef } = user;
+  const { id, weight, kef, gender, height, age, yourGoal } = user;
   updateWaterValue(id, weight, kef);
   updateWeightValue(id, weight);
+  updateCalories(id, gender, weight, height, kef, age, yourGoal);
   res.status(200).send({ code: 200, user });
 };
 

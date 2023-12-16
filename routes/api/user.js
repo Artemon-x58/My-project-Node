@@ -11,6 +11,26 @@ router.put(
   ctrl.users.updateUserSetting
 );
 
+router.put(
+  "/goal",
+  authenticate,
+  validateUsers(schemas.goalSchema),
+  ctrl.users.goalEdit
+);
+
+router.post(
+  "/food-intake",
+  authenticate,
+  validateUsers(schemas.addDairySchema),
+  ctrl.users.addDiary
+);
+
+router.delete(
+  "/food-intake",
+  authenticate,
+  validateUsers(schemas.deleteDairySchema),
+  ctrl.users.deleteDiary
+);
 
 router.post(
   "/water-intake",
@@ -18,6 +38,7 @@ router.post(
   validateUsers(schemas.waterSchema),
   ctrl.users.waterEdit
 );
+router.delete("/water-intake", authenticate, ctrl.users.waterDelete);
 
 router.post(
   "/edit-weight",
