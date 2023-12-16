@@ -3,9 +3,15 @@ const logger = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
 
-const { authRouter, userRouter } = require("./routes/api");
+const {
+  authRouter,
+  userRouter,
+  recommendedFoodRouter,
+} = require("./routes/api");
 
 const app = express();
+
+app.use(express.urlencoded({ extended: false }));
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
@@ -16,6 +22,7 @@ app.use(express.static("public"));
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api", recommendedFoodRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });

@@ -4,6 +4,14 @@ const schemas = require("../../schemas");
 const ctrl = require("../../controllers");
 const router = express.Router();
 
+router.put(
+  "/update",
+  authenticate,
+  validateUsers(schemas.updateUserSchema),
+  ctrl.users.updateUserSetting
+);
+
+
 router.post(
   "/water-intake",
   authenticate,

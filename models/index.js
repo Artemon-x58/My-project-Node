@@ -1,11 +1,11 @@
 const User = require("./user");
 const Water = require("./water");
-const Calories = require("./calories");
 const Weight = require("./weightUser");
+const RecommendedFood = require("./recommendedFood");
 
 module.exports = {
   User,
   Water,
-  Calories,
   Weight,
+  RecommendedFood,
 };

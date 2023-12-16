@@ -8,7 +8,7 @@ const updateWaterValue = async (owner, weight, kef) => {
     { owner },
     { $set: { recommendedWater: water } },
     { new: true }
-  ).exec();
+  );
 };
 
 module.exports = updateWaterValue;

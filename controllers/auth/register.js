@@ -3,35 +3,41 @@ const { HttpError } = require("../../helpers");
 const gravatar = require("gravatar");
 const bcrypt = require("bcrypt");
 const { initialWaterValue } = require("../../water");
-const { initialCaloriesValue } = require("../../calories");
 const { initialWeightValue } = require("../../weight");
 
-require("dotenv").config();
+// require("dotenv").config();
 
 const register = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const { name, email, password, age, weight, height, kef, gender, yourGoal } =
+    req.body;
+  const user = await User.findOne({ email }).exec();
   if (user) {
     throw HttpError(409, "Email already in use");
+  }
+  if (
+    !name ||
+    !email ||
+    !password ||
+    !age ||
+    !weight ||
+    !height ||
+    !kef ||
+    !gender ||
+    !yourGoal
+  ) {
+    throw HttpError(400);
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
+
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
     avatarURL,
   });
+
   await initialWaterValue(newUser.id, newUser.weight, newUser.kef);
-  await initialCaloriesValue(
-    newUser.id,
-    newUser.gender,
-    newUser.weight,
-    newUser.height,
-    newUser.kef,
-    newUser.age,
-    newUser.yourGoal
-  );
   await initialWeightValue(newUser.id, newUser.weight);
 
   res.status(201).json({
