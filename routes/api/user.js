@@ -25,6 +25,13 @@ router.post(
   ctrl.users.addDiary
 );
 
+router.put(
+  "/food-intake:id",
+  authenticate,
+  validateUsers(schemas.updateDiarySchema),
+  ctrl.users.updateDiary
+);
+
 router.delete(
   "/food-intake",
   authenticate,

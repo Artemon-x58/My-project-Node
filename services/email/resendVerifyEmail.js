@@ -77,9 +77,7 @@ const resendVerifyEmail = async (req, res) => {
   };
   await sendEmail(createNewPassword);
 
-  res.json({
-    message: "The new password was created successfully",
-  });
+  res.json({ code: 200, message: "The new password was created successfully" });
 };
 
 module.exports = resendVerifyEmail;

@@ -4,23 +4,38 @@ const { Diary } = require("../../models");
 
 const addDiary = async (req, res) => {
   const { id: owner } = req.user;
-  const { meals, title, calories, carbohydrates, protein, fat } = req.body;
-  console.log(typeof calories);
   const today = currentDate();
 
-  // Ищем объект Diary по owner и meals
-  const existingDiary = await Diary.findOneAndUpdate(
-    { owner },
-    {
-      $push: {
-        [meals]: { title, calories, carbohydrates, protein, fat, date: today },
-      },
-    },
-    { new: true }
-  ).exec();
-  addCaloriesToday(owner, calories, carbohydrates, protein, fat);
+  const entries = req.body;
 
-  res.json({ existingDiary });
+  const results = [];
+
+  for (const entry of entries) {
+    const { meals, title, calories, carbohydrates, protein, fat } = entry;
+
+    const existingDiary = await Diary.findOneAndUpdate(
+      { owner },
+      {
+        $push: {
+          [meals]: {
+            title,
+            calories,
+            carbohydrates,
+            protein,
+            fat,
+            date: today,
+          },
+        },
+      },
+      { new: true }
+    ).exec();
+
+    addCaloriesToday(owner, calories, carbohydrates, protein, fat);
+
+    console.log(existingDiary[meals]);
+    res.json({ code: 201, existingDiary });
+    results.push({ existingDiary });
+  }
 };
 
 module.exports = addDiary;
