@@ -7,6 +7,7 @@ const goalEdit = require("./goalEdit");
 const addDiary = require("./addDiary");
 const deleteDiary = require("./deleteDiary");
 const updateDiary = require("./updateDiary");
+const statistics = require("./statistics");
 
 module.exports = {
   waterEdit: ctrlWrapper(waterEdit),
@@ -17,4 +18,5 @@ module.exports = {
   addDiary: ctrlWrapper(addDiary),
   deleteDiary: ctrlWrapper(deleteDiary),
   updateDiary: ctrlWrapper(updateDiary),
+  statistics: ctrlWrapper(statistics),
 };

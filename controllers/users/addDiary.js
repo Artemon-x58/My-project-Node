@@ -1,14 +1,13 @@
-const { addCaloriesToday } = require("../../calories");
+const { addCaloriesToday, sumObjectProperties } = require("../../calories");
 const { currentDate } = require("../../helpers");
 const { Diary } = require("../../models");
 
 const addDiary = async (req, res) => {
   const { id: owner } = req.user;
-  const today = currentDate();
-
+  const date = currentDate();
   const entries = req.body;
 
-  const results = [];
+  const results = {};
 
   for (const entry of entries) {
     const { meals, title, calories, carbohydrates, protein, fat } = entry;
@@ -23,19 +22,24 @@ const addDiary = async (req, res) => {
             carbohydrates,
             protein,
             fat,
-            date: today,
+            date,
           },
         },
       },
       { new: true }
     ).exec();
-
-    addCaloriesToday(owner, calories, carbohydrates, protein, fat);
-
-    console.log(existingDiary[meals]);
-    res.json({ code: 201, existingDiary });
-    results.push({ existingDiary });
+    // Создаем структуру данных в объекте results
+    if (!results[meals]) {
+      results[meals] = [];
+    }
+    results[meals].push(existingDiary[meals][existingDiary[meals].length - 1]);
   }
+  const sumNutrients = sumObjectProperties(req.body);
+  const { calories, carbohydrates, protein, fat } = sumNutrients;
+
+  addCaloriesToday(owner, calories, carbohydrates, protein, fat, date);
+
+  res.status(201).json({ results });
 };
 
 module.exports = addDiary;

@@ -13,23 +13,21 @@ const deleteDiary = async (req, res) => {
     { owner },
     {
       $set: {
-        [meals]: {
-          title: 0,
-          calories: 0,
-          carbohydrates: 0,
-          protein: 0,
-          fat: 0,
-          date: today,
-        },
+        [meals]: [],
       },
     }
   ).exec();
 
   res.json({ existingDiary });
 
-  const { calories, carbohydrates, protein, fat } = sumObjectProperties(
-    existingDiary[meals]
+  const filteredEntries = existingDiary[meals].filter(
+    (item) => item.date === today
   );
+
+  const { calories, carbohydrates, protein, fat } =
+    sumObjectProperties(filteredEntries);
+
+  console.log(filteredEntries);
 
   deleteCaloriesToday(owner, calories, carbohydrates, protein, fat);
 };

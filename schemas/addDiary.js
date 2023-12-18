@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const validMeals = ["breakfast", "dinner", "lunch", "snack"];
 
-const addDairySchema = Joi.array().items(
+const DairySchema = Joi.array().items(
   Joi.object({
     meals: Joi.string()
       .valid(...validMeals)
@@ -15,4 +15,4 @@ const addDairySchema = Joi.array().items(
   })
 );
 
-module.exports = addDairySchema;
+module.exports = DairySchema;

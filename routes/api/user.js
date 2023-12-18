@@ -21,7 +21,7 @@ router.put(
 router.post(
   "/food-intake",
   authenticate,
-  validateUsers(schemas.addDairySchema),
+  validateUsers(schemas.DairySchema),
   ctrl.users.addDiary
 );
 
@@ -46,6 +46,13 @@ router.post(
   ctrl.users.waterEdit
 );
 router.delete("/water-intake", authenticate, ctrl.users.waterDelete);
+
+router.get(
+  "/statistics",
+  authenticate,
+  validateUsers(schemas.statisticsSchema),
+  ctrl.users.statistics
+);
 
 router.post(
   "/edit-weight",

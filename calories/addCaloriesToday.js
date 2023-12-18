@@ -1,15 +1,21 @@
 const { currentDate } = require("../helpers");
 const { Calories } = require("../models");
 
-const caloriesToday = async (owner, calories, carbohydrates, protein, fat) => {
+const addCaloriesToday = async (
+  owner,
+  calories,
+  carbohydrates,
+  protein,
+  fat,
+  date
+) => {
   const today = currentDate();
 
   const existingCalories = await Calories.findOne({
     owner,
     "caloriesAndDate.date": today,
   });
-
-  if (existingCalories) {
+  if (existingCalories && date === today) {
     await Calories.findOneAndUpdate(
       { owner, "caloriesAndDate.date": today },
       {
@@ -32,7 +38,7 @@ const caloriesToday = async (owner, calories, carbohydrates, protein, fat) => {
             carbohydrates,
             protein,
             fat,
-            date: today,
+            date: date,
           },
         },
       },
@@ -41,4 +47,4 @@ const caloriesToday = async (owner, calories, carbohydrates, protein, fat) => {
   }
 };
 
-module.exports = caloriesToday;
+module.exports = addCaloriesToday;
