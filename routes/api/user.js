@@ -4,6 +4,8 @@ const schemas = require("../../schemas");
 const ctrl = require("../../controllers");
 const router = express.Router();
 
+router.get("/current", authenticate, ctrl.users.getCurrent);
+
 router.put(
   "/update",
   authenticate,
@@ -18,18 +20,20 @@ router.put(
   ctrl.users.goalEdit
 );
 
+router.get("/food-intake", authenticate, ctrl.users.getDiary);
+
 router.post(
   "/food-intake",
   authenticate,
-  validateUsers(schemas.DairySchema),
+  validateUsers(schemas.addDairySchema),
   ctrl.users.addDiary
 );
 
 router.put(
-  "/food-intake:id",
+  "/food-intake/:id",
   authenticate,
-  validateUsers(schemas.updateDiarySchema),
-  ctrl.users.updateDiary
+  validateUsers(schemas.dairyUpdateSchema),
+  ctrl.users.updateDiaryById
 );
 
 router.delete(
@@ -37,6 +41,13 @@ router.delete(
   authenticate,
   validateUsers(schemas.deleteDairySchema),
   ctrl.users.deleteDiary
+);
+
+router.delete(
+  "/food-intake/:id",
+  authenticate,
+  validateUsers(schemas.deleteDairySchema),
+  ctrl.users.deleteDairyById
 );
 
 router.post(
@@ -55,7 +66,7 @@ router.get(
 );
 
 router.post(
-  "/edit-weight",
+  "/weight",
   authenticate,
   validateUsers(schemas.weightSchema),
   ctrl.users.weightEdit

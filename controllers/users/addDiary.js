@@ -1,6 +1,10 @@
-const { addCaloriesToday, sumObjectProperties } = require("../../calories");
+const {
+  addCaloriesToday,
+  sumObjectProperties,
+  addNutrientsPerDay,
+} = require("../../calories");
 const { currentDate } = require("../../helpers");
-const { Diary } = require("../../models");
+const { Diary, Calories, NutrientsPerDay } = require("../../models");
 
 const addDiary = async (req, res) => {
   const { id: owner } = req.user;
@@ -11,8 +15,7 @@ const addDiary = async (req, res) => {
 
   for (const entry of entries) {
     const { meals, title, calories, carbohydrates, protein, fat } = entry;
-
-    const existingDiary = await Diary.findOneAndUpdate(
+    const result = await Diary.findOneAndUpdate(
       { owner },
       {
         $push: {
@@ -28,18 +31,58 @@ const addDiary = async (req, res) => {
       },
       { new: true }
     ).exec();
-    // Создаем структуру данных в объекте results
-    if (!results[meals]) {
-      results[meals] = [];
-    }
-    results[meals].push(existingDiary[meals][existingDiary[meals].length - 1]);
+
+    results[meals] = results[meals] || [];
+    results[meals].push(result[meals][result[meals].length - 1]);
   }
+
   const sumNutrients = sumObjectProperties(req.body);
   const { calories, carbohydrates, protein, fat } = sumNutrients;
 
-  addCaloriesToday(owner, calories, carbohydrates, protein, fat, date);
+  await addCaloriesToday(owner, calories, carbohydrates, protein, fat, date);
 
-  res.status(201).json({ results });
+  const { caloriesAndDate } = await Calories.findOne({
+    owner,
+    "caloriesAndDate.date": date,
+  })
+    .select("caloriesAndDate.$")
+    .exec();
+  const newCaloriesAndDate = caloriesAndDate[0];
+
+  const key = Object.keys(results)[0];
+  await addNutrientsPerDay(
+    owner,
+    key,
+    calories,
+    carbohydrates,
+    protein,
+    fat,
+    date
+  );
+
+  const newNutrients = await NutrientsPerDay.findOne({
+    owner,
+    [key]: { $elemMatch: { date: date } },
+  }).exec();
+
+  const {
+    calories: caloriesPerDay,
+    carbohydrates: carbohydratesPerDay,
+    protein: proteinPerDay,
+    fat: fatPerDay,
+  } = newNutrients[key][0];
+
+  const newListMeals = await Diary.findOne({ owner });
+  res.status(201).json({
+    newCaloriesAndDate,
+    [key]: {
+      calories: caloriesPerDay,
+      carbohydrates: carbohydratesPerDay,
+      protein: proteinPerDay,
+      fat: fatPerDay,
+    },
+    newListMeals: newListMeals[key],
+  });
 };
 
 module.exports = addDiary;

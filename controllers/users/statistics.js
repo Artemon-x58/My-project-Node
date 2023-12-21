@@ -1,5 +1,9 @@
-const { getMonthNumber } = require("../../helpers");
-const { Calories } = require("../../models");
+const {
+  getMonthNumber,
+  perDayThisMonth,
+  calculateAverage,
+} = require("../../helpers");
+const { Calories, Weight, Water } = require("../../models");
 
 const statistics = async (req, res) => {
   const { month } = req.body;
@@ -7,17 +11,33 @@ const statistics = async (req, res) => {
 
   const monthNumber = getMonthNumber(month);
 
-  // Построение строки регулярного выражения для поиска месяца в формате "гггг.мм."
-  const regexString = `\\.${monthNumber.toString().padStart(2, "0")}\\.`;
-  const regex = new RegExp(regexString);
-
-  const calories = await Calories.find({
+  const { caloriesAndDate } = await Calories.findOne({
     owner,
-    "caloriesAndDate.date": { $regex: regex },
+  }).exec();
+
+  const { weightAndDate } = await Weight.findOne({
+    owner,
+  }).exec();
+
+  const { waterAndDate } = await Water.findOne({
+    owner,
+  }).exec();
+
+  const caloriesPerDayThisMonth = perDayThisMonth(caloriesAndDate, monthNumber);
+  const weightPerDayThisMonth = perDayThisMonth(weightAndDate, monthNumber);
+  const waterPerDayThisMonth = perDayThisMonth(waterAndDate, monthNumber);
+
+  const averageCalories = calculateAverage(caloriesPerDayThisMonth, "calories");
+  const averageWeight = calculateAverage(weightPerDayThisMonth, "weight");
+  const averageWater = calculateAverage(waterPerDayThisMonth, "water");
+
+  res.json({
+    averageCalories,
+    averageWeight,
+    averageWater,
+    caloriesPerDayThisMonth,
+    weightPerDayThisMonth,
+    waterPerDayThisMonth,
   });
-
-  // Далее обрабатываем результаты запроса
-  res.json({ calories });
 };
-
 module.exports = statistics;

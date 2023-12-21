@@ -6,8 +6,11 @@ const waterDelete = require("./waterDelete");
 const goalEdit = require("./goalEdit");
 const addDiary = require("./addDiary");
 const deleteDiary = require("./deleteDiary");
-const updateDiary = require("./updateDiary");
+const updateDiaryById = require("./updateDiaryById");
 const statistics = require("./statistics");
+const getCurrent = require("./getCurrent");
+const deleteDairyById = require("./deleteDairyById");
+const getDiary = require("./getDiary");
 
 module.exports = {
   waterEdit: ctrlWrapper(waterEdit),
@@ -17,6 +20,9 @@ module.exports = {
   goalEdit: ctrlWrapper(goalEdit),
   addDiary: ctrlWrapper(addDiary),
   deleteDiary: ctrlWrapper(deleteDiary),
-  updateDiary: ctrlWrapper(updateDiary),
+  updateDiaryById: ctrlWrapper(updateDiaryById),
   statistics: ctrlWrapper(statistics),
+  getCurrent: ctrlWrapper(getCurrent),
+  deleteDairyById: ctrlWrapper(deleteDairyById),
+  getDiary: ctrlWrapper(getDiary),
 };

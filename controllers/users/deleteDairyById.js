@@ -1,32 +1,31 @@
 const {
   deleteCaloriesToday,
+  sumObjectProperties,
   deleteNutrientsPerDay,
 } = require("../../calories");
-const sumObjectProperties = require("../../calories/sumObjectProperties");
 const { currentDate } = require("../../helpers");
 const { Diary, NutrientsPerDay } = require("../../models");
 
-const deleteDiary = async (req, res) => {
+const deleteDairyById = async (req, res) => {
+  const { id: newId } = req.params;
   const { id: owner } = req.user;
   const { meals } = req.body;
 
   const today = currentDate();
 
-  const existingDiary = await Diary.findOneAndUpdate(
+  const result = await Diary.findOneAndUpdate(
     { owner },
-    {
-      $set: {
-        [meals]: [],
-      },
-    }
+    { $pull: { [meals]: { _id: newId } } }
   ).exec();
 
-  const filteredEntries = existingDiary[meals].filter(
-    (item) => item.date === today
+  const filteredEntries = result[meals].filter(
+    (item) => item._id.toString() === newId
   );
 
   const { calories, carbohydrates, protein, fat } =
     sumObjectProperties(filteredEntries);
+
+  deleteCaloriesToday(owner, calories, carbohydrates, protein, fat);
   await deleteNutrientsPerDay(
     owner,
     meals,
@@ -36,26 +35,20 @@ const deleteDiary = async (req, res) => {
     fat
   );
 
-  deleteCaloriesToday(owner, calories, carbohydrates, protein, fat);
-
-  const promise = await NutrientsPerDay.findOne({
+  const nutrientsPerDay = await NutrientsPerDay.findOne({
     owner,
-    meals: {
-      $elemMatch: {
-        date: today,
-      },
-    },
+    [`${meals}.date`]: today,
   }).exec();
 
-  let caloriesPerDay, carbohydratesPerDay, proteinPerDay, fatPerDay;
-  promise[meals].map((item) => {
-    caloriesPerDay = item.calories;
-    carbohydratesPerDay = item.carbohydrates;
-    proteinPerDay = item.protein;
-    fatPerDay = item.fat;
-    return true;
-  });
+  const {
+    calories: caloriesPerDay,
+    carbohydrates: carbohydratesPerDay,
+    protein: proteinPerDay,
+    fat: fatPerDay,
+  } = nutrientsPerDay && nutrientsPerDay[meals][0];
+
   const newListMeals = await Diary.findOne({ owner });
+
   res.json({
     [meals]: {
       calories: caloriesPerDay,
@@ -67,4 +60,4 @@ const deleteDiary = async (req, res) => {
   });
 };
 
-module.exports = deleteDiary;
+module.exports = deleteDairyById;

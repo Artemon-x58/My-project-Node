@@ -15,31 +15,7 @@ const updateUserSetting = async (req, res) => {
   updateWaterValue(id, weight, kef);
   updateWeightValue(id, weight);
   updateCalories(id, gender, weight, height, kef, age, yourGoal);
-  res.status(200).send({ code: 200, user });
+  res.status(200).send({ code: 200, message: 'Settings were successfully updated'});
 };
-
-//   const { id } = req.user;
-
-//   const validSubscriptions = ["startert", "pro", "business"];
-//   if (!validSubscriptions.includes(subscription)) {
-//     throw HttpError(400, "Invalid subscription value");
-//   }
-
-//   const updatedUser = await User.findByIdAndUpdate(
-//     id,
-//     { subscription },
-//     { new: true }
-//   );
-
-//   if (!updatedUser) {
-//     throw HttpError(400, "User not found");
-//   }
-//   res.json({
-//     user: {
-//       email: req.user.email,
-//       subscription: updatedUser.subscription,
-//     },
-//   });
-// };
 
 module.exports = updateUserSetting;
